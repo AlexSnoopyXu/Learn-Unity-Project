@@ -6,6 +6,7 @@ using UnityEngine;
 public class MeshTest : MonoBehaviour {
 
     public GameObject sp;
+    public Material mat;
 
 	// Use this for initialization
 	void Start () {
@@ -28,6 +29,8 @@ public class MeshTest : MonoBehaviour {
 
         //设置顶点
         mesh.vertices = new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0) };
+
+        mesh.uv = new Vector2[] { new Vector2(0, 0), new Vector2(0, 1), new Vector2(1, 1) };
         //设置三角形顶点顺序，顺时针设置
         mesh.triangles = new int[] { 0, 1, 2 };
     }
@@ -175,6 +178,8 @@ public class MeshTest : MonoBehaviour {
         int R = 50;
         int L = 50;
 
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+
         // 半径
         float radius = 10f;
         // 分隔数
@@ -184,7 +189,8 @@ public class MeshTest : MonoBehaviour {
         Vector3[] vertices = new Vector3[R * L * 2];
 
         //三角形顶点
-        int[] triangles = new int[R * L * 2 * 3];
+        //int[] triangles = new int[R * L * 2 * 3];
+        List<int> triangles = new List<int>();
 
         float deltaAngle = Mathf.Deg2Rad * 360f / segments;
         float h = 0.0f;
@@ -197,14 +203,14 @@ public class MeshTest : MonoBehaviour {
             r = Mathf.Sqrt(s1 / Mathf.PI);
             for (int i = 0; i < 100; i++)
             {
-                GameObject go = new GameObject();
+                //GameObject go = new GameObject();
                 float cosA = Mathf.Cos(currentAngle);
                 float sinA = Mathf.Sin(currentAngle);
-                vertices[i] = new Vector3( cosA * r, h, sinA * r);
-                go.transform.position = vertices[i];
-                go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
-                go.AddComponent<MeshRenderer>();
-                go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                vertices[i] = new Vector3( cosA * r, -Mathf.Sqrt(radius * radius - r * r), sinA * r);
+                //go.transform.position = vertices[i];
+                //go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
+                //go.AddComponent<MeshRenderer>();
+                //go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 currentAngle += deltaAngle;
             }
             
@@ -219,19 +225,32 @@ public class MeshTest : MonoBehaviour {
             r = Mathf.Sqrt(s1 / Mathf.PI);
             for (int i = 0; i < 100; i++)
             {
-                GameObject go = new GameObject();
+                //GameObject go = new GameObject();
                 float cosA = Mathf.Cos(currentAngle);
                 float sinA = Mathf.Sin(currentAngle);
-                vertices[i] = new Vector3(cosA * r, h, sinA * r);
-                go.transform.position = vertices[i];
-                go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
-                go.AddComponent<MeshRenderer>();
-                go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                vertices[i] = new Vector3(cosA * r, Mathf.Sqrt(radius * radius - r * r), sinA * r);
+                //go.transform.position = vertices[i];
+                //go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
+                //go.AddComponent<MeshRenderer>();
+                //go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                 currentAngle += deltaAngle;
             }
         }
 
+        for(int j = 0; j < 40; j++)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                triangles.Add(j * 100 + i);
+                triangles.Add((j + 1) * 100 + i+1);
+                triangles.Add((j + 1) * 100 + i);
+                triangles.Add((j + 1) * 100 + i+1);
+                triangles.Add(j * 100 + i);
+                triangles.Add(j * 100 + i+1);
+            }
+        }
 
-
+        mesh.vertices = vertices;
+        mesh.triangles = triangles.ToArray();
     }
 }
