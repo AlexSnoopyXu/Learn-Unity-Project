@@ -179,6 +179,9 @@ public class MeshTest : MonoBehaviour {
         int L = 50;
 
         Mesh mesh = GetComponent<MeshFilter>().mesh;
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.material = mat;
+        mesh.Clear();
 
         // 半径
         float radius = 10f;
@@ -186,10 +189,9 @@ public class MeshTest : MonoBehaviour {
         int segments = 100;
 
         //顶点
-        Vector3[] vertices = new Vector3[R * L * 2];
+        List<Vector3> vertices = new List<Vector3>();
 
         //三角形顶点
-        //int[] triangles = new int[R * L * 2 * 3];
         List<int> triangles = new List<int>();
 
         float deltaAngle = Mathf.Deg2Rad * 360f / segments;
@@ -203,18 +205,19 @@ public class MeshTest : MonoBehaviour {
             r = Mathf.Sqrt(s1 / Mathf.PI);
             for (int i = 0; i < 100; i++)
             {
-                //GameObject go = new GameObject();
                 float cosA = Mathf.Cos(currentAngle);
                 float sinA = Mathf.Sin(currentAngle);
-                vertices[i] = new Vector3( cosA * r, -Mathf.Sqrt(radius * radius - r * r), sinA * r);
+                vertices.Add(new Vector3(cosA * r, -Mathf.Sqrt(radius * radius - r * r), sinA * r));
+                currentAngle += deltaAngle;
+
+                //GameObject go = new GameObject();
                 //go.transform.position = vertices[i];
                 //go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
                 //go.AddComponent<MeshRenderer>();
                 //go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                currentAngle += deltaAngle;
             }
-            
-                h+= radius / 25;
+
+            h += radius / 25;
         }
 
         for (int j = 25; j >= 0; j--)
@@ -225,32 +228,56 @@ public class MeshTest : MonoBehaviour {
             r = Mathf.Sqrt(s1 / Mathf.PI);
             for (int i = 0; i < 100; i++)
             {
-                //GameObject go = new GameObject();
+                
                 float cosA = Mathf.Cos(currentAngle);
                 float sinA = Mathf.Sin(currentAngle);
-                vertices[i] = new Vector3(cosA * r, Mathf.Sqrt(radius * radius - r * r), sinA * r);
+                vertices.Add(new Vector3(cosA * r, Mathf.Sqrt(radius * radius - r * r), sinA * r));
+                currentAngle += deltaAngle;
+
+                //GameObject go = new GameObject();
                 //go.transform.position = vertices[i];
                 //go.AddComponent<MeshFilter>().mesh = sp.GetComponent<MeshFilter>().mesh;
                 //go.AddComponent<MeshRenderer>();
                 //go.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                currentAngle += deltaAngle;
             }
         }
 
-        for(int j = 0; j < 40; j++)
+        for(int j = 0; j < 50; j++)
         {
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 99; i++)
             {
                 triangles.Add(j * 100 + i);
-                triangles.Add((j + 1) * 100 + i+1);
+                triangles.Add(j * 100 + i + 1);
                 triangles.Add((j + 1) * 100 + i);
-                triangles.Add((j + 1) * 100 + i+1);
-                triangles.Add(j * 100 + i);
-                triangles.Add(j * 100 + i+1);
+                triangles.Add(j * 100 + i + 1);
+                triangles.Add((j + 1) * 100 + i + 1);
+                triangles.Add((j + 1) * 100 + i);
+                
+            }
+
+            triangles.Add(j * 100 + 99);
+            triangles.Add(j * 100 + 0);
+            triangles.Add((j + 1) * 100 + 99);
+            triangles.Add(j * 100 + 0);
+            triangles.Add((j + 1) * 100);
+            triangles.Add((j + 1) * 100 + 99);
+        }
+
+        List<Vector2> uv = new List<Vector2>();
+
+        float vOffset = 1.0f / 50;
+        float uOffset = 1.0f / 100;
+
+        for (int i = 0; i < 51; i++)
+        {
+            for (int j = 0; j < 100; j++)
+            {
+                uv.Add(new Vector2(j * uOffset, i * vOffset));
             }
         }
 
-        mesh.vertices = vertices;
+        mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
+        mesh.uv = uv.ToArray();
     }
 }
