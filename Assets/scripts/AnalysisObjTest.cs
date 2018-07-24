@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class AnalysisObjTest : MonoBehaviour {
@@ -29,12 +30,18 @@ public class AnalysisObjTest : MonoBehaviour {
     // 顺序组匹配
     Regex fRegex = new Regex(fMatch);
 
+    // 文件中顶点
+    List<Vector3> txtVertices = new List<Vector3>();
     // 顶点
     List<Vector3> vertices = new List<Vector3>();
     // 顶点顺序
     List<int> triangles = new List<int>();
+    // 文件中的uv
+    List<Vector2> txtUv = new List<Vector2>();
     // uv
     List<Vector2> uv = new List<Vector2>();
+    // 文件中的法线
+    List<Vector3> txtNormals = new List<Vector3>();
     // 法线
     List<Vector3> normals = new List<Vector3>();
     // 顺序组
@@ -62,8 +69,8 @@ public class AnalysisObjTest : MonoBehaviour {
 
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
-        //mesh.uv = uv.ToArray();
-        //mesh.normals = normals.ToArray();
+        mesh.uv = uv.ToArray();
+        mesh.normals = normals.ToArray();
     }
 
     /// <summary>
@@ -77,19 +84,19 @@ public class AnalysisObjTest : MonoBehaviour {
             if(verticesRegex.Match(strs[i]).Value != "")
             {
                 string[] temp = strs[i].Split(' ');
-                vertices.Add(new Vector3(float.Parse(temp[1]), float.Parse(temp[2]), float.Parse(temp[3])));
+                txtVertices.Add(new Vector3(float.Parse(temp[1]), float.Parse(temp[2]), float.Parse(temp[3])));
                 continue;
             }
             else if (uvRegex.Match(strs[i]).Value != "")
             {
                 string[] temp = strs[i].Split(' ');
-                uv.Add(new Vector2(float.Parse(temp[1]), float.Parse(temp[2])));
+                txtUv.Add(new Vector2(float.Parse(temp[1]), float.Parse(temp[2])));
                 continue;
             }
             else if (normalsRegex.Match(strs[i]).Value != "")
             {
                 string[] temp = strs[i].Split(' ');
-                normals.Add(new Vector3(float.Parse(temp[1]), float.Parse(temp[2]), float.Parse(temp[3])));
+                txtNormals.Add(new Vector3(float.Parse(temp[1]), float.Parse(temp[2]), float.Parse(temp[3])));
                 continue;
             }
             else if (fRegex.Match(strs[i]).Value != "")
@@ -99,12 +106,29 @@ public class AnalysisObjTest : MonoBehaviour {
                 fTemp.Add(temp[2]);
                 fTemp.Add(temp[3]);
                 fTemp.Add(temp[4]);
-                triangles.Add(int.Parse(temp[1].Split('/')[0]));
-                triangles.Add(int.Parse(temp[2].Split('/')[0]));
-                triangles.Add(int.Parse(temp[3].Split('/')[0]));
-                triangles.Add(int.Parse(temp[1].Split('/')[0]));
-                triangles.Add(int.Parse(temp[3].Split('/')[0]));
-                triangles.Add(int.Parse(temp[4].Split('/')[0]));
+
+                // 顶点
+                vertices.Add(txtVertices[int.Parse(temp[1].Split('/')[0]) - 1]);
+                vertices.Add(txtVertices[int.Parse(temp[2].Split('/')[0]) - 1]);
+                vertices.Add(txtVertices[int.Parse(temp[3].Split('/')[0]) - 1]);
+                vertices.Add(txtVertices[int.Parse(temp[4].Split('/')[0]) - 1]);
+                // uv
+                uv.Add(txtUv[int.Parse(temp[1].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[2].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[3].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[4].Split('/')[1]) - 1]);
+                // 法线
+                normals.Add(txtNormals[int.Parse(temp[1].Split('/')[2]) - 1]);
+                normals.Add(txtNormals[int.Parse(temp[2].Split('/')[2]) - 1]);
+                normals.Add(txtNormals[int.Parse(temp[3].Split('/')[2]) - 1]);
+                normals.Add(txtNormals[int.Parse(temp[4].Split('/')[2]) - 1]);
+                // 顶点顺序
+                triangles.Add(int.Parse(temp[1].Split('/')[0]) - 1);
+                triangles.Add(int.Parse(temp[2].Split('/')[0]) - 1);
+                triangles.Add(int.Parse(temp[3].Split('/')[0]) - 1);
+                triangles.Add(int.Parse(temp[1].Split('/')[0]) - 1);
+                triangles.Add(int.Parse(temp[3].Split('/')[0]) - 1);
+                triangles.Add(int.Parse(temp[4].Split('/')[0]) - 1);
                 continue;
             }
             objStrs += strs[i];
