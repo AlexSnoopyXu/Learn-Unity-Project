@@ -9,6 +9,8 @@ using System.Linq;
 public class AnalysisObjTest : MonoBehaviour {
     const string FilePath = @"Assets\Obj\cube.txt";
 
+    public Material mat;
+
     // 顶点匹配字符
     const string verticesMatch = @"\A^v\b";
     // uv匹配字符
@@ -17,9 +19,6 @@ public class AnalysisObjTest : MonoBehaviour {
     const string normalsMatch = @"\A^vn\b";
     // 顺序组匹配字符
     const string fMatch = @"\A^f\b";
-
-    // 解析出的字符串
-    string objStrs = "";
 
     // 顶点匹配
     Regex verticesRegex = new Regex(verticesMatch);
@@ -50,7 +49,6 @@ public class AnalysisObjTest : MonoBehaviour {
     // Use this for initialization
     void Start () {
         AnalysisTxtFile();
-        Debug.Log(objStrs);
         DrawCube();
     }
 	
@@ -66,6 +64,8 @@ public class AnalysisObjTest : MonoBehaviour {
     {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         mesh.Clear();
+        MeshRenderer meshRenderer = GetComponent<MeshRenderer>();
+        meshRenderer.material = mat;
 
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
@@ -79,6 +79,8 @@ public class AnalysisObjTest : MonoBehaviour {
     void AnalysisTxtFile()
     {
         string[] strs = File.ReadAllLines(FilePath);
+        // f数据第几行
+        int count = 0;
         for (int i = 0; i < strs.Length; i++)
         {
             if(verticesRegex.Match(strs[i]).Value != "")
@@ -113,26 +115,25 @@ public class AnalysisObjTest : MonoBehaviour {
                 vertices.Add(txtVertices[int.Parse(temp[3].Split('/')[0]) - 1]);
                 vertices.Add(txtVertices[int.Parse(temp[4].Split('/')[0]) - 1]);
                 // uv
-                uv.Add(txtUv[int.Parse(temp[1].Split('/')[1]) - 1]);
-                uv.Add(txtUv[int.Parse(temp[2].Split('/')[1]) - 1]);
-                uv.Add(txtUv[int.Parse(temp[3].Split('/')[1]) - 1]);
                 uv.Add(txtUv[int.Parse(temp[4].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[3].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[2].Split('/')[1]) - 1]);
+                uv.Add(txtUv[int.Parse(temp[1].Split('/')[1]) - 1]);
                 // 法线
                 normals.Add(txtNormals[int.Parse(temp[1].Split('/')[2]) - 1]);
                 normals.Add(txtNormals[int.Parse(temp[2].Split('/')[2]) - 1]);
                 normals.Add(txtNormals[int.Parse(temp[3].Split('/')[2]) - 1]);
                 normals.Add(txtNormals[int.Parse(temp[4].Split('/')[2]) - 1]);
                 // 顶点顺序
-                triangles.Add(int.Parse(temp[1].Split('/')[0]) - 1);
-                triangles.Add(int.Parse(temp[2].Split('/')[0]) - 1);
-                triangles.Add(int.Parse(temp[3].Split('/')[0]) - 1);
-                triangles.Add(int.Parse(temp[1].Split('/')[0]) - 1);
-                triangles.Add(int.Parse(temp[3].Split('/')[0]) - 1);
-                triangles.Add(int.Parse(temp[4].Split('/')[0]) - 1);
+                triangles.Add(0 + count * 4);
+                triangles.Add(1 + count * 4);
+                triangles.Add(2 + count * 4);
+                triangles.Add(0 + count * 4);
+                triangles.Add(2 + count * 4);
+                triangles.Add(3 + count * 4);
+                count++;
                 continue;
             }
-            objStrs += strs[i];
-            objStrs += "\n";
         }
     }
 }
