@@ -5,6 +5,7 @@
 		//新的凹凸纹理贴图
 		_Bump("Bump", 2D) = "bump" {}
 		}
+
 		SubShader{
 		Tags{ "RenderType" = "Opaque" }
 		LOD 200
