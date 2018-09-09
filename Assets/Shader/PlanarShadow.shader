@@ -10,6 +10,7 @@ Shader "TestShader/PlanarShadow"
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
+		_Plane("Plane", vector) = (1,1,1,1)
 	}
 	SubShader
 	{
@@ -83,7 +84,7 @@ Shader "TestShader/PlanarShadow"
 				float4 vertex : SV_POSITION;
 			};
 
-			float4x4 _Plane;  //阴影接收平面
+			half4 _Plane;
 
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
@@ -93,15 +94,11 @@ Shader "TestShader/PlanarShadow"
 				v2f o;
 
 				float3 lightDir = WorldSpaceLightDir(v.vertex);
-				lightDir = mul(_Plane, float4(lightDir,0)).xyz;
 
 				// 模型空间到世界空间
 				float4 worldPosW = mul(unity_ObjectToWorld, v.vertex);
-				worldPosW = mul(_Plane, worldPosW);
-
+				worldPosW.xyz = worldPosW.xyz - dot(worldPosW.xyz, _Plane.xyz) / dot(lightDir, _Plane.xyz) * lightDir;
 				worldPosW.y = 0;
-				worldPosW = mul(_Plane, worldPosW);
-
 				o.vertex = mul(UNITY_MATRIX_VP,worldPosW);
 				o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 				return o;
