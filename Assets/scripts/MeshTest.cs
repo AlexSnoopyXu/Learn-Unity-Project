@@ -242,25 +242,20 @@ public class MeshTest : MonoBehaviour {
             }
         }
 
-        for(int j = 0; j < 50; j++)
+        for(int j = 0; j < 49; j++)
         {
-            for (int i = 0; i < 99; i++)
+            for (int i = 0; i < 100; i++)
             {
                 triangles.Add(j * 100 + i);
-                triangles.Add(j * 100 + i + 1);
-                triangles.Add((j + 1) * 100 + i);
-                triangles.Add(j * 100 + i + 1);
                 triangles.Add((j + 1) * 100 + i + 1);
+                triangles.Add(j * 100 + i + 1);
+                triangles.Add(j * 100 + i);
                 triangles.Add((j + 1) * 100 + i);
+                triangles.Add((j + 1) * 100 + i + 1);
+                
+                
                 
             }
-
-            triangles.Add(j * 100 + 99);
-            triangles.Add(j * 100 + 0);
-            triangles.Add((j + 1) * 100 + 99);
-            triangles.Add(j * 100 + 0);
-            triangles.Add((j + 1) * 100);
-            triangles.Add((j + 1) * 100 + 99);
         }
 
         List<Vector2> uv = new List<Vector2>();

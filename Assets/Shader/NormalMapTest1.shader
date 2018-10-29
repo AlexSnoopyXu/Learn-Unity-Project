@@ -29,7 +29,6 @@ Shader "TestShader/NormalMapTest1"
 				float4 _MainTex_ST;
 				sampler2D _BumpMap;
 				float4 _BumpMap_ST;
-				float4 _LightPos;
 
 				//定义结构体：vertex shader阶段输出的内容
 				struct appdata 
@@ -38,7 +37,6 @@ Shader "TestShader/NormalMapTest1"
 					float2 uv : TEXCOORD0; 
 					float4 tangent : TANGENT; 
 					float3 normal:NORMAL; 
-					float3 lightDir : TEXCOORD1;
 				};
 				
 				struct v2f 
@@ -55,7 +53,7 @@ Shader "TestShader/NormalMapTest1"
 					v2f o; 
 					o.vertex = UnityObjectToClipPos(v.vertex);
 					o.uv = TRANSFORM_TEX(v.uv, _BumpMap); 
-					float3 binormal = cross(v.normal, v.tangent); 
+					float3 binormal = cross(v.normal, v.tangent) * v.tangent.w;
 					//用顶点的Tangent,Binormal,Normal组合成选择矩阵
 					float3x3 rotation = float3x3(v.tangent.xyz, binormal, v.normal);
 					o.lightDir = mul(rotation, ObjSpaceLightDir(v.vertex));
