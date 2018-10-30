@@ -242,22 +242,6 @@ public class MeshTest : MonoBehaviour {
             }
         }
 
-        for(int j = 0; j < 49; j++)
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                triangles.Add(j * 100 + i);
-                triangles.Add((j + 1) * 100 + i + 1);
-                triangles.Add(j * 100 + i + 1);
-                triangles.Add(j * 100 + i);
-                triangles.Add((j + 1) * 100 + i);
-                triangles.Add((j + 1) * 100 + i + 1);
-                
-                
-                
-            }
-        }
-
         List<Vector2> uv = new List<Vector2>();
 
         float vOffset = 1.0f / 50;
@@ -271,8 +255,77 @@ public class MeshTest : MonoBehaviour {
             }
         }
 
+
+        //List<Tangent> tangent = new List<Tangent>();
+
+        Tangent[] tangent = new Tangent[vertices.Count];
+
+        for(int i = 0; i < tangent.Length; i++)
+        {
+            tangent[i] = new Tangent();
+        }
+
+        for (int j = 0; j < 49; j++)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                triangles.Add(j * 100 + i);
+                triangles.Add((j + 1) * 100 + i + 1);
+                triangles.Add(j * 100 + i + 1);
+
+                CalcTangents(tangent
+                    , new Vector3[] { vertices[j * 100 + i], vertices[(j + 1) * 100 + i + 1], vertices[j * 100 + i + 1] }
+                    , new Vector2[] { uv[j * 100 + i], uv[(j + 1) * 100 + i + 1], uv[j * 100 + i + 1] }
+                    , new int[] { (j * 100 + i),((j + 1) * 100 + i + 1),(j * 100 + i + 1) });
+                triangles.Add(j * 100 + i);
+                triangles.Add((j + 1) * 100 + i);
+                triangles.Add((j + 1) * 100 + i + 1);
+                CalcTangents(tangent
+                    , new Vector3[] { vertices[j * 100 + i], vertices[(j + 1) * 100 + i], vertices[(j + 1) * 100 + i + 1] }
+                    , new Vector2[] { uv[j * 100 + i], uv[(j + 1) * 100 + i], uv[(j + 1) * 100 + i + 1] }
+                    , new int[] { (j * 100 + i), ((j + 1) * 100 + i), ((j + 1) * 100 + i + 1) });
+            }
+        }
+
+        List<Vector4> tangents = new List<Vector4>();
+        foreach(Tangent t in tangent)
+        {
+            t.tangent = t.tangent / t.count;
+            tangents.Add(t.tangent);
+        }
+
         mesh.vertices = vertices.ToArray();
         mesh.triangles = triangles.ToArray();
         mesh.uv = uv.ToArray();
+        mesh.tangents = tangents.ToArray();
     }
+
+    private void CalcTangents(Tangent[] tangents, Vector3[] vertices, Vector2[] uv, int[] indexs)
+    {
+        Vector3 v01 = vertices[1] - vertices[0];
+        Vector3 v02 = vertices[2] - vertices[0];
+        float[] fDeltaV = { (uv[1].y - uv[0].y), (uv[2].y - uv[0].y) };
+
+        Vector3 vTangent = (v01 * fDeltaV[1]) - (v02 * fDeltaV[0]);
+
+        for (int j = 0; j < 3; j++)
+        {
+            
+            if (tangents[indexs[j]].tangent == vTangent.normalized)
+            {
+                tangents[indexs[j]].tangent += vTangent.normalized;
+                tangents[indexs[j]].count++;
+            }
+            else
+            {
+                tangents[indexs[j]].tangent = vTangent.normalized;
+            }
+        }
+    }
+}
+
+public class Tangent
+{
+    public Vector3 tangent = Vector3.zero;
+    public int count = 1;
 }
