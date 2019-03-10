@@ -19,12 +19,12 @@ public class GOMoveComponent : MonoBehaviour {
         
         if(h != 0)
         {
-            target.position = new Vector3(target.position.x + 0.1f * (h > 0 ? 1 : -1), target.position.y, target.position.z);
+            target.position = new Vector3(target.position.x + 0.05f * (h > 0 ? 1 : -1), target.position.y, target.position.z);
         }
 
         if (v != 0)
         {
-            target.position = new Vector3(target.position.x, target.position.y, target.position.z + 0.1f * (v > 0 ? 1 : -1));
+            target.position = new Vector3(target.position.x, target.position.y, target.position.z + 0.05f * (v > 0 ? 1 : -1));
         }
     }
 }
