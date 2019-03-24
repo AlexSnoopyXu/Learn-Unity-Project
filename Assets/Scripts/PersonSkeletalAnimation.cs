@@ -15,15 +15,16 @@ public class PersonSkeletalAnimation : MonoBehaviour
     public Transform roots;
     private List<Matrix4x4> translate;
     private Transform[] bones;
-    private List<Vector4> offset;
+    private List<Vector3> offset;
+    public SkinnedMeshRenderer skinned;
 
     // Use this for initialization
     void Start()
     {
         translate = new List<Matrix4x4>();
-        offset = new List<Vector4>();
+        offset = new List<Vector3>();
         mesh = this.GetComponent<MeshFilter>().mesh;
-        bones = roots.GetComponentsInChildren<Transform>();
+        bones = skinned.bones;
         GetBones();
         GetOffset();
         Debug.Log("");
@@ -43,8 +44,10 @@ public class PersonSkeletalAnimation : MonoBehaviour
         List<Vector3> newVertices = new List<Vector3>();
         for (int i = 0; i < length; i++)
         {
-            newVertices.Add(translate[boneWeights[i].boneIndex0].inverse * offset[i]);
-            //newVertices.Add(mesh.bindposes[boneWeights[i].boneIndex0].inverse * offset[i]);
+            newVertices.Add(translate[boneWeights[i].boneIndex0].MultiplyPoint(offset[i * 4]) * boneWeights[i].weight0 +
+            translate[boneWeights[i].boneIndex1].MultiplyPoint(offset[i * 4 + 1]) * boneWeights[i].weight1 +
+            translate[boneWeights[i].boneIndex2].MultiplyPoint(offset[i * 4 + 2]) * boneWeights[i].weight2 +
+            translate[boneWeights[i].boneIndex3].MultiplyPoint(offset[i * 4 + 3]) * boneWeights[i].weight3);
         }
         mesh.SetVertices(newVertices);
     }
@@ -56,7 +59,10 @@ public class PersonSkeletalAnimation : MonoBehaviour
         offset.Clear();
         for (int i = 0; i < vertices.Length; i++)
         {
-            offset.Add(translate[boneWeights[i].boneIndex0] * new Vector4(vertices[i].x, vertices[i].y, vertices[i].z, 1));
+            offset.Add(mesh.bindposes[boneWeights[i].boneIndex0].MultiplyPoint(vertices[i]));
+            offset.Add(mesh.bindposes[boneWeights[i].boneIndex1].MultiplyPoint(vertices[i]));
+            offset.Add(mesh.bindposes[boneWeights[i].boneIndex2].MultiplyPoint(vertices[i]));
+            offset.Add(mesh.bindposes[boneWeights[i].boneIndex3].MultiplyPoint(vertices[i]));
         }
     }
 
@@ -117,14 +123,14 @@ public class PersonSkeletalAnimation : MonoBehaviour
 
     private Matrix4x4 MakeMatrix(Transform trans)
     {
-        Matrix4x4 tran = GetScaleMatrix(trans.lossyScale)
-            * GetRotateZMatrix(trans.localEulerAngles)
-            * GetRotateXMatrix(trans.localEulerAngles)
+        Matrix4x4 tran = GetTranslateMatrix(trans.localPosition)
             * GetRotateYMatrix(trans.localEulerAngles)
-            * GetTranslateMatrix(trans.localPosition);
+            * GetRotateXMatrix(trans.localEulerAngles)
+            * GetRotateZMatrix(trans.localEulerAngles)
+            * GetScaleMatrix(trans.lossyScale);
         if (HasParent(trans))
         {
-            tran *= MakeMatrix(trans.parent);
+            tran = MakeMatrix(trans.parent) * tran;
         }
         return tran;
         

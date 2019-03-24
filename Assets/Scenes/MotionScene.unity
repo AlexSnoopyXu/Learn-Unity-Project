@@ -296,8 +296,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a9b01c129672049a55c55e2abfebf8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 1622328228}
   roots: {fileID: 1076194867}
+  skinned: {fileID: 1792334871}
 --- !u!1 &888191614
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,11 +410,11 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 9046e8a0335567648975ac4e3f70879d, type: 2}
   m_IsPrefabParent: 0
---- !u!95 &1622328228 stripped
-Animator:
-  m_PrefabParentObject: {fileID: 95755702627850066, guid: 612253a9e43083647a5f099d4e48c3be,
+--- !u!137 &1792334871 stripped
+SkinnedMeshRenderer:
+  m_PrefabParentObject: {fileID: 137382117100900778, guid: 9046e8a0335567648975ac4e3f70879d,
     type: 2}
-  m_PrefabInternal: {fileID: 1975507819}
+  m_PrefabInternal: {fileID: 1362274722}
 --- !u!1001 &1975507819
 Prefab:
   m_ObjectHideFlags: 0
@@ -1070,6 +1070,18 @@ Prefab:
     - target: {fileID: 95755702627850066, guid: 612253a9e43083647a5f099d4e48c3be,
         type: 2}
       propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449266388196566, guid: 612253a9e43083647a5f099d4e48c3be, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449266388196566, guid: 612253a9e43083647a5f099d4e48c3be, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449266388196566, guid: 612253a9e43083647a5f099d4e48c3be, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
